@@ -1,7 +1,7 @@
 ################################################################################
 # Top-level CMakeLists.txt file for Crazy Eddie's GUI System
 ################################################################################
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.15)
 
 if (APPLE AND NOT CMAKE_OSX_ARCHITECTURES)
     set( CMAKE_OSX_ARCHITECTURES ${CMAKE_HOST_SYSTEM_PROCESSOR} CACHE STRING "Build architectures for Mac OS X")
@@ -24,9 +24,9 @@ include(CMakeDependentOption)
 ################################################################################
 # Set up version information
 ################################################################################
-set( CEGUI_VERSION_MAJOR 9999)
-set( CEGUI_VERSION_MINOR 0)
-set( CEGUI_VERSION_PATCH 0)
+set( CEGUI_VERSION_MAJOR 1)
+set( CEGUI_VERSION_MINOR 2)
+set( CEGUI_VERSION_PATCH 3)
 set( CEGUI_VERSION ${CEGUI_VERSION_MAJOR}.${CEGUI_VERSION_MINOR}.${CEGUI_VERSION_PATCH} )
 
 #
