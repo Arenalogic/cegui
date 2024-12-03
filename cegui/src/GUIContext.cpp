@@ -75,12 +75,19 @@ GUIContext::~GUIContext()
     if (d_rootWindow)
         d_rootWindow->attachToGUIContext(nullptr);
 
-    for (auto record : d_tooltips)
-        if (WindowManager::getSingleton().isAlive(record.second))
-            WindowManager::getSingleton().destroyWindow(record.second);
+    destroyTooltips();
 
     for (auto currentBuffer : d_cursorGeometry)
         System::getSingleton().getRenderer()->destroyGeometryBuffer(*currentBuffer);
+}
+
+void GUIContext::destroyTooltips()
+{
+    for(auto record : d_tooltips)
+        if(WindowManager::getSingleton().isAlive(record.second))
+            WindowManager::getSingleton().destroyWindow(record.second);
+
+    d_tooltips.clear();
 }
 
 //----------------------------------------------------------------------------//
@@ -426,6 +433,9 @@ void GUIContext::onWindowDetached(Window* window)
         d_oldCaptureWindow = nullptr;
 
     releaseInputCapture(true, window);
+
+    if(d_clickTracker.firstWindow == window || d_clickTracker.lastWindow == window)
+        resetClickTracker();
 }
 
 //----------------------------------------------------------------------------//
@@ -675,7 +685,6 @@ void GUIContext::updateTooltipState(float timeElapsed)
     if (!needTooltip)
     {
         hideTooltip(true);
-        d_tooltipSource = nullptr;
         return;
     }
 
@@ -848,7 +857,7 @@ bool GUIContext::injectMouseMove(float dx, float dy)
     {
         CursorMoveEventArgs args(window, d_cursorPosition, d_mouseButtons, d_modifierKeys, delta);
         window->onCursorMove(args);
-        if (args.handled)
+        if (args.handled && !window->isCursorInputPropagationEnabled())
             return true;
 
         if (window == d_modalWindow)
