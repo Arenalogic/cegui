@@ -825,6 +825,35 @@ if( CEGUI_INSTALL_PKGCONFIG )
     endif()
 endif()
 
+# Export the targets to a CMake package
+install(EXPORT CEGUITargets
+    FILE CEGUITargets.cmake
+    NAMESPACE CEGUI::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CEGUI
+)
+
+# Create a version file for the CEGUI package
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfigVersion.cmake
+    VERSION ${CEGUI_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+# Configure and install the CEGUIConfig.cmake file
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/CEGUIConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfig.cmake
+    @ONLY
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CEGUI
+)
+
+
 # Activating the default multi-processor build setting for all Visual Studio versions
 if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
