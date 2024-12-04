@@ -278,6 +278,7 @@ macro (cegui_add_library_impl _LIB_NAME _IS_MODULE _SOURCE_FILES_VAR _HEADER_FIL
 
         if (CEGUI_BUILD_DYNAMIC_CONFIGURATION)
             install(TARGETS ${_LIB_NAME}
+                EXPORT CEGUITargets  # Export the target to CEGUITargets
                 RUNTIME DESTINATION bin COMPONENT cegui_bin
                 LIBRARY DESTINATION ${_CEGUI_LIB_DEST} COMPONENT cegui_lib
                 ARCHIVE DESTINATION ${CEGUI_INSTALL_LIB_DIR} COMPONENT cegui_devel
@@ -286,6 +287,7 @@ macro (cegui_add_library_impl _LIB_NAME _IS_MODULE _SOURCE_FILES_VAR _HEADER_FIL
 
         if (CEGUI_BUILD_STATIC_CONFIGURATION)
             install(TARGETS ${_LIB_NAME}_Static
+              EXPORT CEGUITargets  # Export the static target to CEGUITargets
               RUNTIME DESTINATION bin COMPONENT cegui_bin
               LIBRARY DESTINATION ${CEGUI_INSTALL_LIB_DIR} COMPONENT cegui_lib
               ARCHIVE DESTINATION ${CEGUI_INSTALL_LIB_DIR} COMPONENT cegui_devel
