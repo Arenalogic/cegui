@@ -515,15 +515,6 @@ cmake_dependent_option( CEGUI_BUILD_DATAFILES_TEST "Specifies whether to build t
 
 option( CEGUI_INSTALL_WITH_RPATH "Specifies whether to install with RPATH set to the install location (TRUE) or with no RPATH set (FALSE)." FALSE )
 
-# custom install locations
-set(CEGUI_INSTALL_INCLUDE_DIR "" CACHE PATH "Specifies custom location for CEGUI includes")
-set(CEGUI_INSTALL_LIB_DIR "" CACHE PATH "Specifies custom location for CEGUI libraries")
-set(CEGUI_INSTALL_DATA_DIR "" CACHE PATH "Specifies custom location for CEGUI datafiles")
-set(CEGUI_INSTALL_DOC_DIR "" CACHE PATH "Specifies custom location for CEGUI docs")
-set(CEGUI_INSTALL_PKGCONFIG_DIR "" CACHE PATH "Specifies custom location for CEGUI pkgconfig")
-set(CEGUI_INSTALL_MODULE_DIR "" CACHE PATH "Specifies custom location for CEGUI module")
-set(CEGUI_INSTALL_SAMPLE_DIR "" CACHE PATH "Specifies custom location for CEGUI samples") # TODO: put into /samples subdir!
-
 
 ################################################################################
 # Define vars holding the names for all the libs we can build for CEGUI.
