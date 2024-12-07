@@ -869,6 +869,35 @@ if (CEGUI_BUILD_TESTS OR CEGUI_BUILD_PERFORMANCE_TESTS OR CEGUI_BUILD_DATAFILES_
     add_subdirectory(tests)
 endif()
 
+# Generate CEGUIConfig.cmake and CEGUIConfigVersion.cmake
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfigVersion.cmake
+    VERSION ${CEGUI_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/CEGUIConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/cegui
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/cegui
+)
+
+# Install the export set for downstream usage
+install(EXPORT CEGUITargets
+    FILE CEGUITargets.cmake
+    NAMESPACE CEGUI::
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/cegui
+)
+
+
 ################################################################################
 # CPack (mostly for source tarballs)
 ################################################################################
