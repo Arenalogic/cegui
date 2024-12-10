@@ -723,6 +723,11 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_RUNTIME_OUTPUT_DIRECT
 # set up install sub-directories
 include(GNUInstallDirs)
 
+if (DEFINED VCPKG_ROOT)
+    set(CEGUI_INSTALL_DATA_DIR ${CMAKE_INSTALL_DATADIR}/cegui)
+endif()
+
+
 
 ################################################################################
 # Deal with files we generate from template files
