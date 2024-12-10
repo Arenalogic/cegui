@@ -710,15 +710,8 @@ message(STATUS "VCPKG_ROOT: ${VCPKG_ROOT}")
 message(STATUS "CEGUI_INSTALL_DATA_DIR: ${CEGUI_INSTALL_DATA_DIR}")
 
 
-if (DEFINED VCPKG_ROOT)
-    message(STATUS "VCPKG_ROOT is defined. Configuring CEGUI_INSTALL_DATA_DIR for vcpkg.")
-    set(CEGUI_INSTALL_DATA_DIR ${CMAKE_INSTALL_DATADIR}/cegui)
-    message(STATUS "CEGUI_INSTALL_DATA_DIR set to: ${CEGUI_INSTALL_DATA_DIR}")
-else()
-    message(STATUS "VCPKG_ROOT is not defined. Using default CEGUI_INSTALL_DATA_DIR.")
-    set(CEGUI_INSTALL_DATA_DIR "share/cegui-1") # Default path if not using vcpkg
-    message(STATUS "CEGUI_INSTALL_DATA_DIR set to: ${CEGUI_INSTALL_DATA_DIR}")
-endif()
+set(CEGUI_INSTALL_DATA_DIR ${CMAKE_INSTALL_DATADIR}/cegui)
+message(STATUS "CEGUI_INSTALL_DATA_DIR set to: ${CEGUI_INSTALL_DATA_DIR}")
 
 ################################################################################
 # Deal with files we generate from template files
