@@ -697,11 +697,29 @@ if (WIN32)
     endif()
 endif()
 
-# set up install sub-directories
+# Set up install directories
 include(GNUInstallDirs)
 
+# Set CEGUI specific install dirs based on standard dirs
+set(CEGUI_INSTALL_LIB_DIR ${CMAKE_INSTALL_LIBDIR})
+set(CEGUI_INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR})
+set(CEGUI_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR})
 set(CEGUI_INSTALL_DATA_DIR ${CMAKE_INSTALL_DATADIR}/cegui)
-message(STATUS "CEGUI_INSTALL_DATA_DIR set to: ${CEGUI_INSTALL_DATA_DIR}")
+
+# For Windows DLL installations
+if(WIN32)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    
+    # Set output directories for multi-config builds (e.g. msvc)
+    foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG})
+        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/lib)
+        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/lib)
+    endforeach()
+endif()
 
 ################################################################################
 # Deal with files we generate from template files
