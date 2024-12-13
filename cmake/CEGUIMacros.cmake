@@ -276,28 +276,57 @@ macro (cegui_add_library_impl _LIB_NAME _IS_MODULE _SOURCE_FILES_VAR _HEADER_FIL
             set(_CEGUI_LIB_DEST ${CEGUI_INSTALL_LIB_DIR})
         endif()
 
-		if (CEGUI_BUILD_DYNAMIC_CONFIGURATION)
-			install(TARGETS ${_LIB_NAME}
-				EXPORT CEGUITargets  # Export the target
-				RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/$<CONFIG>
-				LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-				ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-				INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-				COMPONENT cegui_lib
-			)
-		endif()
+        if (CEGUI_BUILD_DYNAMIC_CONFIGURATION)
+            install(TARGETS ${_LIB_NAME}
+                EXPORT CEGUITargets
+                RUNTIME
+                    DESTINATION ${CMAKE_INSTALL_BINDIR}
+                    CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+                RUNTIME
+                    DESTINATION debug/${CMAKE_INSTALL_BINDIR}
+                    CONFIGURATIONS Debug
+                LIBRARY
+                    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                    CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+                LIBRARY
+                    DESTINATION debug/${CMAKE_INSTALL_LIBDIR}
+                    CONFIGURATIONS Debug
+                ARCHIVE
+                    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                    CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+                ARCHIVE
+                    DESTINATION debug/${CMAKE_INSTALL_LIBDIR}
+                    CONFIGURATIONS Debug
+                INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+                COMPONENT cegui_lib
+            )
+        endif()
 
-		if (CEGUI_BUILD_STATIC_CONFIGURATION)
-			install(TARGETS ${_LIB_NAME}_Static
-				EXPORT CEGUITargets  # Export the static target
-				RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/$<CONFIG>
-				LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-				ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-				INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-				COMPONENT cegui_lib
-			)
-		endif()
-
+        if (CEGUI_BUILD_STATIC_CONFIGURATION)
+            install(TARGETS ${_LIB_NAME}_Static
+                EXPORT CEGUITargets
+                RUNTIME
+                    DESTINATION ${CMAKE_INSTALL_BINDIR}
+                    CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+                RUNTIME
+                    DESTINATION debug/${CMAKE_INSTALL_BINDIR}
+                    CONFIGURATIONS Debug
+                LIBRARY
+                    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                    CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+                LIBRARY
+                    DESTINATION debug/${CMAKE_INSTALL_LIBDIR}
+                    CONFIGURATIONS Debug
+                ARCHIVE
+                    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                    CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+                ARCHIVE
+                    DESTINATION debug/${CMAKE_INSTALL_LIBDIR}
+                    CONFIGURATIONS Debug
+                INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+                COMPONENT cegui_lib
+            )
+        endif()
     endif()
 
     if (${_INSTALL_HEADERS})
@@ -565,18 +594,50 @@ macro (cegui_add_test_executable_with_extra_files _NAME _EXTRA_HEADER_FILES _EXT
     ###########################################################################
     if (CEGUI_BUILD_DYNAMIC_CONFIGURATION)
         install(TARGETS ${CEGUI_TARGET_NAME}
-            RUNTIME DESTINATION bin COMPONENT cegui_bin
-            LIBRARY DESTINATION ${CEGUI_INSTALL_LIB_DIR} COMPONENT cegui_lib
-            ARCHIVE DESTINATION ${CEGUI_INSTALL_LIB_DIR} COMPONENT cegui_devel
+            RUNTIME
+                DESTINATION ${CMAKE_INSTALL_BINDIR}
+                CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+            RUNTIME
+                DESTINATION debug/${CMAKE_INSTALL_BINDIR}
+                CONFIGURATIONS Debug
+            LIBRARY
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+            LIBRARY
+                DESTINATION debug/${CMAKE_INSTALL_LIBDIR}
+                CONFIGURATIONS Debug
+            ARCHIVE
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+            ARCHIVE
+                DESTINATION debug/${CMAKE_INSTALL_LIBDIR}
+                CONFIGURATIONS Debug
+            COMPONENT cegui_bin
             )
     endif()
 
     if (CEGUI_BUILD_STATIC_CONFIGURATION)
         install(TARGETS ${CEGUI_TARGET_NAME}_Static
-          RUNTIME DESTINATION bin COMPONENT cegui_bin
-          LIBRARY DESTINATION ${CEGUI_INSTALL_LIB_DIR} COMPONENT cegui_lib 
-          ARCHIVE DESTINATION ${CEGUI_INSTALL_LIB_DIR} COMPONENT cegui_devel
-    )
+            RUNTIME
+                DESTINATION ${CMAKE_INSTALL_BINDIR}
+                CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+            RUNTIME
+                DESTINATION debug/${CMAKE_INSTALL_BINDIR}
+                CONFIGURATIONS Debug
+            LIBRARY
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+            LIBRARY
+                DESTINATION debug/${CMAKE_INSTALL_LIBDIR}
+                CONFIGURATIONS Debug
+            ARCHIVE
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+            ARCHIVE
+                DESTINATION debug/${CMAKE_INSTALL_LIBDIR}
+                CONFIGURATIONS Debug
+            COMPONENT cegui_bin
+        )
     endif()
 
     add_test(NAME ${_NAME} COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CEGUI_TARGET_NAME})
