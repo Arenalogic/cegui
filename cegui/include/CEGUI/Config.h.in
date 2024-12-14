@@ -47,6 +47,10 @@ setting CMake options and regenerating, rather than editing directly.
 #cmakedefine CEGUI_STATIC
 #cmakedefine CEGUI_HAS_BUILD_SUFFIX
 
+// OpenGL loader configuration
+#cmakedefine CEGUI_USE_GLEW
+#cmakedefine CEGUI_USE_EPOXY
+
 #if defined(CEGUI_HAS_BUILD_SUFFIX) && !defined(CEGUI_BUILD_SUFFIX)
 #   if defined(DEBUG) || defined(_DEBUG)
 #       define CEGUI_BUILD_SUFFIX "${CEGUI_BUILD_SUFFIX}"
