@@ -835,10 +835,20 @@ write_basic_package_version_file(
     COMPATIBILITY SameMajorVersion
 )
 
+# Set paths relative to the install prefix
+set(CEGUI_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
+set(CEGUI_LIB_DIR "${CMAKE_INSTALL_LIBDIR}")
+set(CEGUI_BIN_DIR "${CMAKE_INSTALL_BINDIR}")
+
 configure_package_config_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/CEGUIConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/cegui
+    PATH_VARS 
+        CEGUI_INCLUDE_DIR
+        CEGUI_LIB_DIR
+        CEGUI_BIN_DIR
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
 
 install(FILES
