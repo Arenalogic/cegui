@@ -30,6 +30,18 @@ set( CEGUI_VERSION_MINOR 0)
 set( CEGUI_VERSION_PATCH 0)
 set( CEGUI_VERSION ${CEGUI_VERSION_MAJOR}.${CEGUI_VERSION_MINOR}.${CEGUI_VERSION_PATCH} )
 
+# String class configuration
+set( CEGUI_STRING_CLASS "UTF-32" CACHE STRING "CEGUI String class configuration: UTF-8, UTF-32, or std" )
+set_property(CACHE CEGUI_STRING_CLASS PROPERTY STRINGS "UTF-8" "UTF-32" "std")
+
+if (CEGUI_STRING_CLASS STREQUAL "UTF-8")
+    set(CEGUI_STRING_CLASS 1)
+elseif (CEGUI_STRING_CLASS STREQUAL "std")
+    set(CEGUI_STRING_CLASS 3)
+else()
+    set(CEGUI_STRING_CLASS 2) # UTF-32 by default
+endif()
+
 #
 # This controls the binary versioning - which is different to release versions
 # defined above.
@@ -261,21 +273,6 @@ cegui_dependent_option( CEGUI_BUILD_PYTHON_MODULES_PYPLUSPLUS "Specifies whether
 cegui_dependent_option( CEGUI_BUILD_PYTHON_MODULES_SWIG "Specifies whether to build the Python extension module(s) via SWIG" "PYTHON3LIBS_FOUND;SWIG_FOUND" )
 
 option( CEGUI_OPTION_SAFE_LUA_MODULE "Specifies whether to enable extra validation in the Lua script module in non-debug builds" FALSE )
-
-set( CEGUI_STRING_CLASS "UTF-32" CACHE STRING "CEGUI offers three CEGUI::String class configurations
-UTF-8 : ASCII, UTF-8 and UTF-32 aware, minimal storage, slightly less efficient, stores code units as char (std::string) internally - mind this fact when manipulating the String
-UTF-32 : ASCII, UTF-8 and UTF-32 aware, stores 32 bit per character, stores code points as char32_t (std::u32string) internally
-std : regular std::string used as CEGUI::String, not Unicode aware"
-)
-set_property(CACHE CEGUI_STRING_CLASS PROPERTY STRINGS "UTF-8" "UTF-32" "std")
-
-if (CEGUI_STRING_CLASS STREQUAL "UTF-8")
-    set(CEGUI_STRING_CLASS 1)
-elseif (CEGUI_STRING_CLASS STREQUAL "std")
-    set(CEGUI_STRING_CLASS 3)
-else()
-    set(CEGUI_STRING_CLASS 2) # UTF-32 by default
-endif()
 
 # Text rendering, BIDI
 

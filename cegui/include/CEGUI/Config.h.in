@@ -46,6 +46,31 @@ setting CMake options and regenerating, rather than editing directly.
 
 #cmakedefine CEGUI_STATIC
 #cmakedefine CEGUI_HAS_BUILD_SUFFIX
+
+#if defined(CEGUI_HAS_BUILD_SUFFIX) && !defined(CEGUI_BUILD_SUFFIX)
+#   if defined(DEBUG) || defined(_DEBUG)
+#       define CEGUI_BUILD_SUFFIX "${CEGUI_BUILD_SUFFIX}"
+#   else
+#       define CEGUI_BUILD_SUFFIX ""
+#   endif
+#endif
+
+//////////////////////////////////////////////////////////////////////////
+// CEGUI::String configuration
+//////////////////////////////////////////////////////////////////////////
+
+// UTF-8 encoded strings (std::string) internally
+#define CEGUI_STRING_CLASS_UTF_8 1
+// UTF-32 encoded strings (std::u32string) internally
+#define CEGUI_STRING_CLASS_UTF_32 2
+// ASCII strings (std::string) internally
+#define CEGUI_STRING_CLASS_ASCII 3
+
+#define CEGUI_STRING_CLASS @CEGUI_STRING_CLASS@
+
+//////////////////////////////////////////////////////////////////////////
+// Remaining configuration options
+//////////////////////////////////////////////////////////////////////////
 #cmakedefine CEGUI_HAS_FREETYPE
 #cmakedefine CEGUI_HAS_PCRE_REGEX
 #cmakedefine CEGUI_HAS_MINIZIP_RESOURCE_PROVIDER
