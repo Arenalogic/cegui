@@ -43,23 +43,5 @@
       "targets": [ "all" ],
       "description": "Build Release configuration with Ninja"
     }
-  ],
-  "testPresets": [
-    {
-      "name": "x64-Debug-Tests",
-      "configurePreset": "x64-Debug",
-      "output": {
-        "shortProgress": true
-      },
-      "description": "Run tests for Debug configuration with Ninja"
-    },
-    {
-      "name": "x64-Release-Tests",
-      "configurePreset": "x64-Release",
-      "output": {
-        "shortProgress": true
-      },
-      "description": "Run tests for Release configuration with Ninja"
-    }
   ]
 }
