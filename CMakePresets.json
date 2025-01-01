@@ -1,13 +1,65 @@
 {
   "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 30
+  },
   "configurePresets": [
     {
-      "name": "default",
-      "binaryDir": "${sourceDir}/build",
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
       "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "CEGUI_SAMPLES_ENABLED": "OFF"
-      }
+        "CEGUI_SAMPLES_ENABLED": "FALSE"
+      },
+      "description": "Debug configuration with Ninja and MSVC"
+    },
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "CEGUI_SAMPLES_ENABLED": "FALSE"
+      },
+      "description": "Release configuration with Ninja and MSVC"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64-Debug",
+      "configurePreset": "x64-Debug",
+      "targets": [ "all" ],
+      "description": "Build Debug configuration with Ninja"
+    },
+    {
+      "name": "x64-Release",
+      "configurePreset": "x64-Release",
+      "targets": [ "all" ],
+      "description": "Build Release configuration with Ninja"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "x64-Debug-Tests",
+      "configurePreset": "x64-Debug",
+      "output": {
+        "shortProgress": true
+      },
+      "description": "Run tests for Debug configuration with Ninja"
+    },
+    {
+      "name": "x64-Release-Tests",
+      "configurePreset": "x64-Release",
+      "output": {
+        "shortProgress": true
+      },
+      "description": "Run tests for Release configuration with Ninja"
     }
   ]
 }

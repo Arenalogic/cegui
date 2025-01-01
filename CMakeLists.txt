@@ -52,25 +52,21 @@ set( CEGUI_ABI_AGE 4)
 MATH( EXPR CEGUI_SOVERSION ${CEGUI_ABI_CURRENT}-${CEGUI_ABI_AGE} )
 set( CEGUI_ABI_VERSION ${CEGUI_SOVERSION}.${CEGUI_ABI_AGE}.${CEGUI_ABI_REVISION} )
 
+if (CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(CEGUI_ARCH_SUFFIX x86)
+else()
+    set(CEGUI_ARCH_SUFFIX x64)
+endif()
+
+################################################################################
+# Check for unsupported compilers
+################################################################################
 cegui_check_mingw()
+cegui_check_msvc()
 
 ################################################################################
 # Check for libs and other packages we might use.
 ################################################################################
-# be sure to search the provided dependencies on Win32 and Mac OS X platforms
-#if ((WIN32 OR APPLE) AND NOT CMAKE_PREFIX_PATH)
-#    set (CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/dependencies" CACHE PATH "Path to dependencies")
-#    # prefer the dylib deps in the dependencies over some other framework
-#    set (CMAKE_FIND_FRAMEWORK LAST)
-#endif()
-
-if (CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++03")
-elseif (NOT CMAKE_VERSION VERSION_LESS "3.1")
-    set (CMAKE_C_STANDARD_REQUIRED TRUE)
-    set (CMAKE_C_STANDARD "99")
-endif ()
 
 # Look for packages
 find_package(PCRE)
@@ -287,7 +283,7 @@ if (CEGUI_BUILD_RENDERER_OPENGL3 AND CEGUI_USE_EPOXY)
     mark_as_advanced (CEGUI_OPENGL_VER_MAJOR_FORCE)
     set (CEGUI_OPENGL_VER_MINOR_FORCE "0" CACHE STRING "Run the samples as if a specific OpenGL (desktop or ES) minor version is used. Useful for testing.")
     mark_as_advanced (CEGUI_OPENGL_VER_MINOR_FORCE)
-    if( CEGUI_GLFW_VER STREQUAL 3 )
+    if( CEGUI_GLFW_VER STREQUAL "3" )
         set( CEGUI_SAMPLES_OPENGL_ES_2_CONTEXT_CREATION_API EGL CACHE STRING "In the sample framework, which API to use for OpenGL ES 2.0 context creation. Possible values are \"EGL\" (default) and \"NATIVE\". This variable is only used with GLFW >= 3.2." )
         mark_as_advanced( CEGUI_SAMPLES_OPENGL_ES_2_CONTEXT_CREATION_API )
     endif()
@@ -386,7 +382,7 @@ if (UNIX AND NOT APPLE AND NOT WIN32)
 endif()
 
 # Option wether to build application templates; default off
-option(CEGUI_BUILD_APPLICATION_TEMPLATES "Specifies whether to build the application templates." TRUE)
+option(CEGUI_BUILD_APPLICATION_TEMPLATES "Specifies whether to build the application templates." FALSE)
 
 if (NOT APPLE AND CEGUI_BUILD_RENDERER_OPENGLES)
     find_package(EGL)
