@@ -50,19 +50,15 @@ endmacro()
 #
 macro (cegui_target_link_libraries _TARGET_NAME)
     if (CEGUI_BUILD_DYNAMIC_CONFIGURATION)
-        target_link_libraries(${_TARGET_NAME} ${ARGN})
+        target_link_libraries(${_TARGET_NAME} PRIVATE ${ARGN})
     endif()
 
     if (TARGET ${_TARGET_NAME}_Static)
         foreach(_LIB ${ARGN})
-            if (${_LIB} STREQUAL optimized OR ${_LIB} STREQUAL debug OR ${_LIB} STREQUAL general)
-                set (_BUILD ${_LIB})
+            if (TARGET ${_LIB}_Static)
+                target_link_libraries(${_TARGET_NAME}_Static PRIVATE ${_LIB}_Static)
             else()
-                if (TARGET ${_LIB}_Static)
-                    target_link_libraries(${_TARGET_NAME}_Static ${_BUILD} ${_LIB}_Static)
-                else()
-                    target_link_libraries(${_TARGET_NAME}_Static ${_BUILD} ${_LIB})
-                endif()
+                target_link_libraries(${_TARGET_NAME}_Static PRIVATE ${_LIB})
             endif()
         endforeach()
     endif()
@@ -75,40 +71,34 @@ macro (cegui_add_dependency_dynamic_libs _TARGET_NAME _DEP_NAME)
     if (TARGET ${_TARGET_NAME})
         if (${_DEP_NAME}_LIBRARIES)
             if (${_DEP_NAME}_LIBRARIES_DBG)
-                foreach(_LIB ${${_DEP_NAME}_LIBRARIES})
-                    target_link_libraries(${_TARGET_NAME} optimized ${_LIB})
-                endforeach()
-                foreach(_LIB ${${_DEP_NAME}_LIBRARIES_DBG})
-                    target_link_libraries(${_TARGET_NAME} debug ${_LIB})
-                endforeach()
+                target_link_libraries(${_TARGET_NAME} PRIVATE
+                    $<$<CONFIG:Debug>:${${_DEP_NAME}_LIBRARIES_DBG}>
+                    $<$<NOT:$<CONFIG:Debug>>:${${_DEP_NAME}_LIBRARIES}>)
             else()
-                target_link_libraries(${_TARGET_NAME} ${${_DEP_NAME}_LIBRARIES})
+                target_link_libraries(${_TARGET_NAME} PRIVATE ${${_DEP_NAME}_LIBRARIES})
             endif()
         elseif (${_DEP_NAME}_LIBRARIES_DBG)
-                target_link_libraries(${_TARGET_NAME} ${${_DEP_NAME}_LIBRARIES_DBG})
+            target_link_libraries(${_TARGET_NAME} PRIVATE ${${_DEP_NAME}_LIBRARIES_DBG})
         endif()
     endif()
 endmacro()
 
 #
-# add static dependency libraries to a target, falling  back to dynamic libraries
+# add static dependency libraries to a target, falling back to dynamic libraries
 # if static do not exist)
 #
 macro (cegui_add_dependency_static_libs _TARGET_NAME _DEP_NAME)
     if (TARGET ${_TARGET_NAME})
         if (${_DEP_NAME}_LIBRARIES_STATIC)
             if (${_DEP_NAME}_LIBRARIES_STATIC_DBG)
-                foreach(_LIB ${${_DEP_NAME}_LIBRARIES_STATIC})
-                    target_link_libraries(${_TARGET_NAME} optimized ${_LIB})
-                endforeach()
-                foreach(_LIB ${${_DEP_NAME}_LIBRARIES_STATIC_DBG})
-                    target_link_libraries(${_TARGET_NAME} debug ${_LIB})
-                endforeach()
+                target_link_libraries(${_TARGET_NAME} PRIVATE
+                    $<$<CONFIG:Debug>:${${_DEP_NAME}_LIBRARIES_STATIC_DBG}>
+                    $<$<NOT:$<CONFIG:Debug>>:${${_DEP_NAME}_LIBRARIES_STATIC}>)
             else()
-                target_link_libraries(${_TARGET_NAME} ${${_DEP_NAME}_LIBRARIES_STATIC})
+                target_link_libraries(${_TARGET_NAME} PRIVATE ${${_DEP_NAME}_LIBRARIES_STATIC})
             endif()
         elseif (${_DEP_NAME}_LIBRARIES_STATIC_DBG)
-            target_link_libraries(${_TARGET_NAME} ${${_DEP_NAME}_LIBRARIES_STATIC_DBG})
+            target_link_libraries(${_TARGET_NAME} PRIVATE ${${_DEP_NAME}_LIBRARIES_STATIC_DBG})
         else()
             cegui_add_dependency_dynamic_libs(${_TARGET_NAME} ${_DEP_NAME})
         endif()
@@ -119,61 +109,77 @@ endmacro()
 # add a dependency to a target (and it's static equivalent, if it exists).
 #
 macro (cegui_add_dependency _TARGET_NAME _DEP_NAME)
-    if (TARGET ${_TARGET_NAME})
-        target_include_directories(${_TARGET_NAME} SYSTEM PRIVATE ${${_DEP_NAME}_INCLUDE_DIR})
-    endif()
-    if (TARGET ${_TARGET_NAME}_Static)
-        target_include_directories(${_TARGET_NAME}_Static SYSTEM PRIVATE ${${_DEP_NAME}_INCLUDE_DIR})
-    endif()
-
-    ###########################################################################
-    #                    NON-STATIC VERSION OF TARGET
-    ###########################################################################
-    if (TARGET ${_TARGET_NAME})
-        if (${_DEP_NAME}_DEFINITIONS)
-            set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS} )
-        endif()
-        if (${_DEP_NAME}_COMPILE_FLAGS)
-            set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_FLAGS ${${_DEP_NAME}_COMPILE_FLAGS} )
+    # First try modern CMake target if it exists
+    if (TARGET ${_DEP_NAME} OR TARGET ${_DEP_NAME}::${_DEP_NAME})
+        set(_MODERN_TARGET "")
+        if (TARGET ${_DEP_NAME})
+            set(_MODERN_TARGET ${_DEP_NAME})
+        elseif (TARGET ${_DEP_NAME}::${_DEP_NAME})
+            set(_MODERN_TARGET ${_DEP_NAME}::${_DEP_NAME})
         endif()
 
-        if (CEGUI_BUILD_SHARED_LIBS_WITH_STATIC_DEPENDENCIES)
+        if (TARGET ${_TARGET_NAME})
+            target_link_libraries(${_TARGET_NAME} PRIVATE ${_MODERN_TARGET})
+        endif()
+        if (TARGET ${_TARGET_NAME}_Static)
+            target_link_libraries(${_TARGET_NAME}_Static PRIVATE ${_MODERN_TARGET})
+        endif()
+    else()
+        # Fall back to old-style variables
+        if (TARGET ${_TARGET_NAME})
+            target_include_directories(${_TARGET_NAME} SYSTEM PRIVATE ${${_DEP_NAME}_INCLUDE_DIR})
+        endif()
+        if (TARGET ${_TARGET_NAME}_Static)
+            target_include_directories(${_TARGET_NAME}_Static SYSTEM PRIVATE ${${_DEP_NAME}_INCLUDE_DIR})
+        endif()
+
+        ###########################################################################
+        #                    NON-STATIC VERSION OF TARGET
+        ###########################################################################
+        if (TARGET ${_TARGET_NAME})
+            if (${_DEP_NAME}_DEFINITIONS)
+                set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS} )
+            endif()
+            if (${_DEP_NAME}_COMPILE_FLAGS)
+                set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_FLAGS ${${_DEP_NAME}_COMPILE_FLAGS} )
+            endif()
+
+            if (CEGUI_BUILD_SHARED_LIBS_WITH_STATIC_DEPENDENCIES)
+                if (${_DEP_NAME}_DEFINITIONS_STATIC)
+                    set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS_STATIC} )
+                endif()
+                if (${_DEP_NAME}_COMPILE_FLAGS_STATIC)
+                    set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_FLAGS ${${_DEP_NAME}_COMPILE_FLAGS_STATIC} )
+                endif()
+
+                cegui_add_dependency_static_libs(${_TARGET_NAME} ${_DEP_NAME})
+            else()
+                if (${_DEP_NAME}_DEFINITIONS_DYNAMIC)
+                    set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS_DYNAMIC} )
+                endif()
+                if (${_DEP_NAME}_COMPILE_FLAGS_DYNAMIC)
+                    set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_FLAGS ${${_DEP_NAME}_COMPILE_FLAGS_DYNAMIC} )
+                endif()
+
+                cegui_add_dependency_dynamic_libs(${_TARGET_NAME} ${_DEP_NAME})
+            endif()
+        endif()
+
+        ###########################################################################
+        #    ADD DEPENDENCY DEFS TO STATIC VERSION OF TARGET (if it exists)
+        ###########################################################################
+        if (TARGET ${_TARGET_NAME}_Static)
+            if (${_DEP_NAME}_DEFINITIONS)
+                set_property( TARGET ${_TARGET_NAME}_Static APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS} )
+            endif()
+
             if (${_DEP_NAME}_DEFINITIONS_STATIC)
-                set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS_STATIC} )
-            endif()
-            if (${_DEP_NAME}_COMPILE_FLAGS_STATIC)
-                set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_FLAGS ${${_DEP_NAME}_COMPILE_FLAGS_STATIC} )
+                set_property( TARGET ${_TARGET_NAME}_Static APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS_STATIC} )
             endif()
 
-            cegui_add_dependency_static_libs(${_TARGET_NAME} ${_DEP_NAME})
-        else()
-            if (${_DEP_NAME}_DEFINITIONS_DYNAMIC)
-                set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS_DYNAMIC} )
-            endif()
-            if (${_DEP_NAME}_COMPILE_FLAGS_DYNAMIC)
-                set_property( TARGET ${_TARGET_NAME} APPEND PROPERTY COMPILE_FLAGS ${${_DEP_NAME}_COMPILE_FLAGS_DYNAMIC} )
-            endif()
-
-            cegui_add_dependency_dynamic_libs(${_TARGET_NAME} ${_DEP_NAME})
+            cegui_add_dependency_static_libs(${_TARGET_NAME}_Static ${_DEP_NAME})
         endif()
     endif()
-
-
-    ###########################################################################
-    #    ADD DEPENDENCY DEFS TO STATIC VERSION OF TARGET (if it exists)
-    ###########################################################################
-    if (TARGET ${_TARGET_NAME}_Static)
-        if (${_DEP_NAME}_DEFINITIONS)
-            set_property( TARGET ${_TARGET_NAME}_Static APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS} )
-        endif()
-
-        if (${_DEP_NAME}_DEFINITIONS_STATIC)
-            set_property( TARGET ${_TARGET_NAME}_Static APPEND PROPERTY COMPILE_DEFINITIONS ${${_DEP_NAME}_DEFINITIONS_STATIC} )
-        endif()
-
-        cegui_add_dependency_static_libs(${_TARGET_NAME}_Static ${_DEP_NAME})
-    endif()
-
 endmacro()
 
 ###############################################################################
