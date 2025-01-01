@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Compute paths relative to package location
+set_and_check(CEGUI_INCLUDE_DIR "@PACKAGE_CEGUI_INCLUDE_DIR@")
+set_and_check(CEGUI_LIB_DIR "@PACKAGE_CEGUI_LIB_DIR@")
+set_and_check(CEGUI_BIN_DIR "@PACKAGE_CEGUI_BIN_DIR@")
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+include("${CMAKE_CURRENT_LIST_DIR}/CEGUITargets.cmake")
+
+check_required_components(CEGUI)

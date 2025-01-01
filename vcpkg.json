@@ -1,0 +1,11 @@
+{
+  "name": "cegui",
+  "version-string": "0.8.7",
+  "dependencies": [
+		"freetype",
+		"glew",
+		"glm",
+		"xerces-c",
+		"freeimage"
+  ]
+}

@@ -1,17 +1,10 @@
 ################################################################################
 # Top-level CMakeLists.txt file for Crazy Eddie's GUI System
 ################################################################################
-cmake_minimum_required(VERSION 3.1)
-if (POLICY CMP0017)
-    cmake_policy(SET CMP0017 OLD)
-endif()
-
-if (POLICY CMP0045)
-    cmake_policy(SET CMP0045 OLD)
-endif()
+cmake_minimum_required(VERSION 3.15)
 
 if (APPLE AND NOT CMAKE_OSX_ARCHITECTURES)
-    set( CMAKE_OSX_ARCHITECTURES x86_64 CACHE STRING "Build architectures for Mac OS X")
+    set( CMAKE_OSX_ARCHITECTURES ${CMAKE_HOST_SYSTEM_PROCESSOR} CACHE STRING "Build architectures for Mac OS X")
 endif()
 
 # default to Release build (it's what most people will use, except cegui devs)
@@ -24,7 +17,7 @@ endif()
 ################################################################################
 project(cegui)
 
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CEGUIMacros)
 include(CMakeDependentOption)
 
@@ -65,11 +58,11 @@ cegui_check_mingw()
 # Check for libs and other packages we might use.
 ################################################################################
 # be sure to search the provided dependencies on Win32 and Mac OS X platforms
-if ((WIN32 OR APPLE) AND NOT CMAKE_PREFIX_PATH)
-    set (CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/dependencies" CACHE PATH "Path to dependencies")
-    # prefer the dylib deps in the dependencies over some other framework
-    set (CMAKE_FIND_FRAMEWORK LAST)
-endif()
+#if ((WIN32 OR APPLE) AND NOT CMAKE_PREFIX_PATH)
+#    set (CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/dependencies" CACHE PATH "Path to dependencies")
+#    # prefer the dylib deps in the dependencies over some other framework
+#    set (CMAKE_FIND_FRAMEWORK LAST)
+#endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -182,7 +175,8 @@ dependency libs over the shared/dynamic ones.  NOTE: On Windows you also need to
 be mindful of which C/C++ runtime setting has been used to compile the various
 components - they must all match or you will get crashes, heap corruption and/or
 other issues." FALSE "WIN32 OR APPLE" FALSE)
-option( CEGUI_BUILD_STATIC_CONFIGURATION "Specifies whether the static configs will be built.  (NB: Shared configs are always built)" FALSE)
+option( CEGUI_BUILD_STATIC_CONFIGURATION "Specifies whether the static configs will be built. (NB: Shared configs are always built)" FALSE)
+option( CEGUI_BUILD_DYNAMIC_CONFIGURATION "Dynamic libs to be built. Always true except for Android" TRUE)
 option( CEGUI_BUILD_STATIC_FACTORY_MODULE "For static CEGUI builds, specifies whether to include the getWindowFactoryModule method.  When false, the developer must provide a custom implementation of the method" FALSE)
 # sanity check on static build option for factory method
 if (CEGUI_BUILD_STATIC_FACTORY_MODULE AND NOT CEGUI_BUILD_STATIC_CONFIGURATION)
@@ -434,15 +428,6 @@ cmake_dependent_option( CEGUI_BUILD_DATAFILES_TEST "Specifies whether to build t
 
 option( CEGUI_INSTALL_WITH_RPATH "Specifies whether to install with RPATH set to the install location (TRUE) or with no RPATH set (FALSE)." FALSE )
 
-# custom install locations
-option( CEGUI_LIB_INSTALL_DIR "Specifies custom location for CEGUI_LIB_INSTALL_DIR"  )
-option( CEGUI_DATA_INSTALL_DIR "Specifies custom location for CEGUI_DATA_INSTALL_DIR" )  
-option( CEGUI_DOC_INSTALL_DIR "Specifies custom location for CEGUI_DOC_INSTALL_DIR" )  
-option( CEGUI_PKGCONFIG_INSTALL_DIR "Specifies custom location for CEGUI_PKGCONFIG_INSTALL_DIR" )  
-option( CEGUI_MODULE_INSTALL_DIR "Specifies custom location for CEGUI_MODULE_INSTALL_DIR" )  
-option( CEGUI_SAMPLE_INSTALL_DIR "Specifies custom location for CEGUI_SAMPLE_INSTALL_DIR" ) # TODO: put into /samples subdir!  
-option( CEGUI_INCLUDE_INSTALL_DIR "Specifies custom location for CEGUI_INCLUDE_INSTALL_DIR" ) 
-
 
 ################################################################################
 # Define vars holding the names for all the libs we can build for CEGUI.
@@ -525,12 +510,14 @@ You should ensure that CEGUI_OPTION_DEFAULT_XMLPARSER is set to something
 appropriate.")
 endif()
 
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "ExpatParser" CEGUI_BUILD_XMLPARSER_EXPAT)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "XercesParser" CEGUI_BUILD_XMLPARSER_XERCES)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "LibXMLParser" CEGUI_BUILD_XMLPARSER_LIBXML2)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "RapidXMLParser" CEGUI_BUILD_XMLPARSER_RAPIDXML)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "TinyXMLParser" CEGUI_BUILD_XMLPARSER_TINYXML)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "TinyXML2Parser" CEGUI_BUILD_XMLPARSER_TINYXML2)
+if(CEGUI_BUILD_DYNAMIC_CONFIGURATION)
+	cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "ExpatParser" CEGUI_BUILD_XMLPARSER_EXPAT)
+	cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "XercesParser" CEGUI_BUILD_XMLPARSER_XERCES)
+	cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "LibXMLParser" CEGUI_BUILD_XMLPARSER_LIBXML2)
+	cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "RapidXMLParser" CEGUI_BUILD_XMLPARSER_RAPIDXML)
+	cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "TinyXMLParser" CEGUI_BUILD_XMLPARSER_TINYXML)
+	cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_XMLPARSER "TinyXML2Parser" CEGUI_BUILD_XMLPARSER_TINYXML2)
+endif()
 
 if (CEGUI_BUILD_STATIC_CONFIGURATION)
     cegui_defaultmodule_sanity_test(CEGUI_STATIC_XMLPARSER_MODULE ${CEGUI_EXPAT_PARSER_LIBNAME} CEGUI_BUILD_XMLPARSER_EXPAT)
@@ -572,13 +559,15 @@ You should ensure that CEGUI_OPTION_DEFAULT_IMAGECODEC is set to something
 appropriate.")
 endif()
 
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "SILLYImageCodec" CEGUI_BUILD_IMAGECODEC_SILLY)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "DevILImageCodec" CEGUI_BUILD_IMAGECODEC_DEVIL)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "FreeImageImageCodec" CEGUI_BUILD_IMAGECODEC_FREEIMAGE)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "STBImageCodec" CEGUI_BUILD_IMAGECODEC_STB)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "CoronaImageCodec" CEGUI_BUILD_IMAGECODEC_CORONA)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "TGAImageCodec" CEGUI_BUILD_IMAGECODEC_TGA)
-cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "SDL2ImageCodec" CEGUI_BUILD_IMAGECODEC_SDL2)
+if(CEGUI_BUILD_DYNAMIC_CONFIGURATION)
+    cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "SILLYImageCodec" CEGUI_BUILD_IMAGECODEC_SILLY)
+    cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "DevILImageCodec" CEGUI_BUILD_IMAGECODEC_DEVIL)
+    cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "FreeImageImageCodec" CEGUI_BUILD_IMAGECODEC_FREEIMAGE)
+    cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "STBImageCodec" CEGUI_BUILD_IMAGECODEC_STB)
+    cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "CoronaImageCodec" CEGUI_BUILD_IMAGECODEC_CORONA)
+    cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "TGAImageCodec" CEGUI_BUILD_IMAGECODEC_TGA)
+    cegui_defaultmodule_sanity_test(CEGUI_OPTION_DEFAULT_IMAGECODEC "SDL2ImageCodec" CEGUI_BUILD_IMAGECODEC_SDL2)
+endif()
 
 if (CEGUI_BUILD_STATIC_CONFIGURATION)
     cegui_defaultmodule_sanity_test(CEGUI_STATIC_IMAGECODEC_MODULE ${CEGUI_SILLY_IMAGECODEC_LIBNAME} CEGUI_BUILD_IMAGECODEC_SILLY)
@@ -611,64 +600,28 @@ if (WIN32)
     endif()
 endif()
 
-# set build output locations
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+# Set up install directories
+include(GNUInstallDirs)
 
-if (WIN32)
-    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-else()
-    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
-endif()
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+# Set CEGUI specific install dirs based on standard dirs
+set(CEGUI_INSTALL_LIB_DIR ${CMAKE_INSTALL_LIBDIR})
+set(CEGUI_INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR})
+set(CEGUI_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR})
+set(CEGUI_INSTALL_DATA_DIR ${CMAKE_INSTALL_DATADIR}/cegui)
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-
-# set up install sub-directories
-if (NOT CEGUI_LIB_INSTALL_DIR)
-  if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND EXISTS "${CMAKE_INSTALL_PREFIX}/lib64")
-    set( CEGUI_LIB_INSTALL_DIR lib64 )
-  elseif (CMAKE_SIZEOF_VOID_P EQUAL 4 AND EXISTS "${CMAKE_INSTALL_PREFIX}/lib32")
-    set( CEGUI_LIB_INSTALL_DIR lib32 )
-  else()
-    set( CEGUI_LIB_INSTALL_DIR lib )
-  endif()
-endif()
-
-set( CEGUI_VER_INSTALL_SUBDIR "/${CMAKE_PROJECT_NAME}-${CEGUI_VERSION_MAJOR}" )
-
-if (NOT CEGUI_DATA_INSTALL_DIR)
-  set( CEGUI_DATA_INSTALL_DIR "share${CEGUI_VER_INSTALL_SUBDIR}" )
-endif()
-
-if (NOT CEGUI_DOC_INSTALL_DIR)
-  set( CEGUI_DOC_INSTALL_DIR "share/doc${CEGUI_VER_INSTALL_SUBDIR}" )
-endif()
-
-if (NOT CEGUI_PKGCONFIG_INSTALL_DIR)
-  set( CEGUI_PKGCONFIG_INSTALL_DIR "${CEGUI_LIB_INSTALL_DIR}/pkgconfig" )
-endif()
-
-if (NOT CEGUI_MODULE_INSTALL_DIR)
-  set( CEGUI_MODULE_INSTALL_DIR "${CEGUI_LIB_INSTALL_DIR}/${CMAKE_PROJECT_NAME}-${CEGUI_VERSION_MAJOR}.${CEGUI_VERSION_MINOR}" )
-endif()
-
-if (NOT CEGUI_SAMPLE_INSTALL_DIR)
-  set( CEGUI_SAMPLE_INSTALL_DIR "${CEGUI_MODULE_INSTALL_DIR}" ) # TODO: put into /samples subdir!
-endif()
-
-if (NOT CEGUI_INCLUDE_INSTALL_DIR)
-  set( CEGUI_INCLUDE_INSTALL_DIR "include${CEGUI_VER_INSTALL_SUBDIR}" )
+# For Windows DLL installations
+if(WIN32)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    
+    # Set output directories for multi-config builds (e.g. msvc)
+    foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG})
+        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/lib)
+        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/lib)
+    endforeach()
 endif()
 
 ################################################################################
@@ -677,41 +630,45 @@ endif()
 configure_file( cegui/include/CEGUI/Version.h.in cegui/include/CEGUI/Version.h )
 configure_file( cegui/include/CEGUI/Config.h.in cegui/include/CEGUI/Config.h )
 configure_file( cegui/include/CEGUI/ModuleConfig.h.in cegui/include/CEGUI/ModuleConfig.h )
-configure_file( samples/common/include/CEGUISamplesConfig.h.in samples/common/include/CEGUISamplesConfig.h )
-configure_file( doc/doxygen/doxyfile.in doc/doxygen/doxyfile )
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/samples")
+    configure_file( samples/common/include/CEGUISamplesConfig.h.in samples/common/include/CEGUISamplesConfig.h )
+endif()
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/doc")
+    configure_file( doc/doxygen/doxyfile.in doc/doxygen/doxyfile )
+endif()
 
 ################################################################################
 # Perhaps install pkg-config ("*.pc") files.
 ################################################################################
-cegui_dependent_option( CEGUI_INSTALL_PKGCONFIG "Whether to install pkg-config (\"*.pc\") files." "UNIX;NOT APPLE" )
+cegui_dependent_option( CEGUI_INSTALL_PKGCONFIG "Whether to install pkg-config (\"*.pc\") files." "CMAKE_HOST_UNIX;NOT CMAKE_HOST_APPLE" )
 mark_as_advanced( CEGUI_INSTALL_PKGCONFIG )
 if( CEGUI_INSTALL_PKGCONFIG )
     configure_file( cegui/CEGUI.pc.in cegui/CEGUI-${CEGUI_VERSION_MAJOR}.pc @ONLY )
-    install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}.pc DESTINATION ${CEGUI_PKGCONFIG_INSTALL_DIR} COMPONENT cegui_pkgconfig)
+    install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}.pc DESTINATION ${CEGUI_INSTALL_PKGCONFIG_DIR} COMPONENT cegui_pkgconfig)
 
     if (CEGUI_BUILD_RENDERER_NULL)
         configure_file( cegui/CEGUI-NULL.pc.in cegui/CEGUI-${CEGUI_VERSION_MAJOR}-NULL.pc @ONLY )
-        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-NULL.pc DESTINATION ${CEGUI_PKGCONFIG_INSTALL_DIR} COMPONENT cegui_pkgconfig)
+        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-NULL.pc DESTINATION ${CEGUI_INSTALL_PKGCONFIG_DIR} COMPONENT cegui_pkgconfig)
     endif()
     if (CEGUI_BUILD_RENDERER_IRRLICHT)
         configure_file( cegui/CEGUI-IRRLICHT.pc.in cegui/CEGUI-${CEGUI_VERSION_MAJOR}-IRRLICHT.pc @ONLY )
-        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-IRRLICHT.pc DESTINATION ${CEGUI_PKGCONFIG_INSTALL_DIR} COMPONENT cegui_pkgconfig)
+        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-IRRLICHT.pc DESTINATION ${CEGUI_INSTALL_PKGCONFIG_DIR} COMPONENT cegui_pkgconfig)
     endif()
     if (CEGUI_BUILD_RENDERER_OGRE)
         configure_file( cegui/CEGUI-OGRE.pc.in cegui/CEGUI-${CEGUI_VERSION_MAJOR}-OGRE.pc @ONLY )
-        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-OGRE.pc DESTINATION ${CEGUI_PKGCONFIG_INSTALL_DIR} COMPONENT cegui_pkgconfig)
+        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-OGRE.pc DESTINATION ${CEGUI_INSTALL_PKGCONFIG_DIR} COMPONENT cegui_pkgconfig)
     endif()
     if (CEGUI_BUILD_RENDERER_OPENGL)
         configure_file( cegui/CEGUI-OPENGL.pc.in cegui/CEGUI-${CEGUI_VERSION_MAJOR}-OPENGL.pc @ONLY )
-        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-OPENGL.pc DESTINATION ${CEGUI_PKGCONFIG_INSTALL_DIR} COMPONENT cegui_pkgconfig)
+        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-OPENGL.pc DESTINATION ${CEGUI_INSTALL_PKGCONFIG_DIR} COMPONENT cegui_pkgconfig)
     endif()
     if (CEGUI_BUILD_RENDERER_OPENGL3)
         configure_file( cegui/CEGUI-OPENGL3.pc.in cegui/CEGUI-${CEGUI_VERSION_MAJOR}-OPENGL3.pc @ONLY )
-        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-OPENGL3.pc DESTINATION ${CEGUI_PKGCONFIG_INSTALL_DIR} COMPONENT cegui_pkgconfig)
+        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-OPENGL3.pc DESTINATION ${CEGUI_INSTALL_PKGCONFIG_DIR} COMPONENT cegui_pkgconfig)
     endif()
     if (CEGUI_BUILD_LUA_MODULE)
         configure_file( cegui/CEGUI-LUA.pc.in cegui/CEGUI-${CEGUI_VERSION_MAJOR}-LUA.pc @ONLY )
-        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-LUA.pc DESTINATION ${CEGUI_PKGCONFIG_INSTALL_DIR} COMPONENT cegui_pkgconfig)
+        install(FILES ${PROJECT_BINARY_DIR}/cegui/CEGUI-${CEGUI_VERSION_MAJOR}-LUA.pc DESTINATION ${CEGUI_INSTALL_PKGCONFIG_DIR} COMPONENT cegui_pkgconfig)
     endif()
 endif()
 
@@ -755,6 +712,45 @@ if (CEGUI_BUILD_TESTS OR CEGUI_BUILD_PERFORMANCE_TESTS OR CEGUI_BUILD_DATAFILES_
 
     add_subdirectory(tests)
 endif()
+
+# Generate CEGUIConfig.cmake and CEGUIConfigVersion.cmake
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfigVersion.cmake
+    VERSION ${CEGUI_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+# Set paths relative to the install prefix
+set(CEGUI_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
+set(CEGUI_LIB_DIR "${CMAKE_INSTALL_LIBDIR}")
+set(CEGUI_BIN_DIR "${CMAKE_INSTALL_BINDIR}")
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/CEGUIConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/cegui
+    PATH_VARS 
+        CEGUI_INCLUDE_DIR
+        CEGUI_LIB_DIR
+        CEGUI_BIN_DIR
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/CEGUIConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/cegui
+)
+
+# Install the export set for downstream usage
+install(EXPORT CEGUITargets
+    FILE CEGUITargets.cmake
+    NAMESPACE CEGUI::
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/cegui
+)
+
 
 ################################################################################
 # CPack (mostly for source tarballs)
