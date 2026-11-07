@@ -29,7 +29,5 @@ if (CEGUI_BUILD_RENDERER_OGRE)
     cegui_add_python_module( ${CEGUI_PYCEGUI_OGRE_RENDERER_LIBNAME} "output/CEGUIOgreRenderer" ${CEGUI_OGRE_RENDERER_LIBNAME} )
 endif()
 
-if (CEGUI_BUILD_RENDERER_OPENGL)
-    cegui_add_python_module( ${CEGUI_PYCEGUI_OPENGL_RENDERER_LIBNAME} "output/CEGUIOpenGLRenderer" ${CEGUI_OPENGL_RENDERER_LIBNAME} )
-endif()
+# Arenalogic fork: no PyCEGUIOpenGLRenderer; its generated bindings wrap the removed OpenGL 1.2 renderer.
 

@@ -84,8 +84,8 @@ Specifies whether to build the regression and performance tests.
 
 @section build_options_renderers Renderer Modules
 @subsection build_options_gl_renderer CEGUI_BUILD_RENDERER_OPENGL
-Specifies whether to include OpenGLRenderer (supports older fixed function
-pipeline desktop OpenGL 1.2) in the OpenGL renderer module
+Removed in the Arenalogic fork: OpenGLRenderer (the fixed function OpenGL 1.2
+renderer) is gone; setting this option ON is a configure error
 @subsection build_options_gl3_renderer CEGUI_BUILD_RENDERER_OPENGL3
 Specifies whether to include OpenGL3Renderer (supports desktop OpenGL 3.2 (core
 profile) and OpenGL ES 2.0) in the OpenGL renderer module

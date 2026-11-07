@@ -43,7 +43,6 @@ setting CMake options and regenerating, rather than editing directly.
 // event that we do not have control over)
 //////////////////////////////////////////////////////////////////////////
 #cmakedefine CEGUI_BUILD_RENDERER_NULL
-#cmakedefine CEGUI_BUILD_RENDERER_OPENGL
 #cmakedefine CEGUI_BUILD_RENDERER_OPENGL3
 #cmakedefine CEGUI_BUILD_RENDERER_OGRE
 #cmakedefine CEGUI_BUILD_RENDERER_IRRLICHT

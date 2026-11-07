@@ -549,7 +549,6 @@ if ("${CEGUI_VERSION}" VERSION_GREATER "0.8.0")
     cegui_register_module(RENDERER IrrlichtRenderer RendererModules/Irrlicht/Renderer.h "IRRLICHT")
     cegui_register_module(RENDERER NullRenderer RendererModules/Null/Renderer.h "NULL")
     cegui_register_module(RENDERER OgreRenderer RendererModules/Ogre/Renderer.h "OGRE")
-    cegui_register_module(RENDERER OpenGLRenderer RendererModules/OpenGL/GLRenderer.h "OPENGL")
     cegui_register_module(RENDERER OpenGL3Renderer RendererModules/OpenGL/GL3Renderer.h "OPENGL3")
     cegui_register_module(RENDERER OpenGLESRenderer RendererModules/OpenGLES/Renderer.h "")
 

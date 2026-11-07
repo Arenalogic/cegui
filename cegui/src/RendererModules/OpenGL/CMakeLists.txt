@@ -6,30 +6,6 @@ if (CEGUI_BUILD_SHARED_LIBS_WITH_STATIC_DEPENDENCIES AND CEGUI_USE_GLEW)
     add_definitions( -DGLEW_STATIC )
 endif()
 
-if (NOT APPLE OR NOT CEGUI_BUILD_RENDERER_OPENGL)
-    list (REMOVE_ITEM CORE_SOURCE_FILES ApplePBTextureTarget.cpp)
-    list (REMOVE_ITEM CORE_HEADER_FILES ${CMAKE_SOURCE_DIR}/cegui/include/CEGUI/RendererModules/OpenGL/ApplePBTextureTarget.h)
-endif()
-
-if (NOT WIN32 OR NOT CEGUI_BUILD_RENDERER_OPENGL)
-    list (REMOVE_ITEM CORE_SOURCE_FILES WGLPBTextureTarget.cpp)
-    list (REMOVE_ITEM CORE_HEADER_FILES ${CMAKE_SOURCE_DIR}/cegui/include/CEGUI/RendererModules/OpenGL/WGLPBTextureTarget.h)
-endif()
-
-if (NOT UNIX OR APPLE OR NOT CEGUI_BUILD_RENDERER_OPENGL)
-    list (REMOVE_ITEM CORE_SOURCE_FILES GLXPBTextureTarget.cpp)
-    list (REMOVE_ITEM CORE_HEADER_FILES ${CMAKE_SOURCE_DIR}/cegui/include/CEGUI/RendererModules/OpenGL/GLXPBTextureTarget.h)
-endif()
-
-if (NOT CEGUI_BUILD_RENDERER_OPENGL)
-    list (REMOVE_ITEM CORE_SOURCE_FILES GLRenderer.cpp
-                                        GLGeometryBuffer.cpp
-                                        GLFBOTextureTarget.cpp)
-    list (REMOVE_ITEM CORE_HEADER_FILES ${CMAKE_SOURCE_DIR}/cegui/include/CEGUI/RendererModules/OpenGL/GLRenderer.h
-                                        ${CMAKE_SOURCE_DIR}/cegui/include/CEGUI/RendererModules/OpenGL/GLGeometryBuffer.h
-                                        ${CMAKE_SOURCE_DIR}/cegui/include/CEGUI/RendererModules/OpenGL/GLFBOTextureTarget.h)
-endif()
-
 if (NOT CEGUI_BUILD_RENDERER_OPENGL3)
     list (REMOVE_ITEM CORE_SOURCE_FILES GL3Renderer.cpp
                                         GL3GeometryBuffer.cpp

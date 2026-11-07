@@ -56,7 +56,6 @@ Each item in here has a comment to describe what it's for.
 //////////////////////////////////////////////////////////////////////////
 // Comment/Uncomment these lines to control renderer use in samples.
 //////////////////////////////////////////////////////////////////////////
-#cmakedefine CEGUI_BUILD_RENDERER_OPENGL
 #cmakedefine CEGUI_BUILD_RENDERER_OPENGL3
 #cmakedefine CEGUI_SAMPLES_SUPPORT_RENDERER_OPENGLES2
 #cmakedefine CEGUI_USE_GLFW_VER @CEGUI_USE_GLFW_VER@

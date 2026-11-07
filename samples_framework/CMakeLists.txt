@@ -70,12 +70,6 @@ if (CEGUI_SAMPLES_RENDERER_OPENGL_ACTIVE)
             )
         endif()
 
-        if (CEGUI_BUILD_RENDERER_OPENGL)
-            list (APPEND CORE_SOURCE_FILES
-                ./src/CEGuiOpenGLBaseApplication.cpp
-            )
-        endif()
-
         if (CEGUI_BUILD_RENDERER_OPENGL3)
             list (APPEND CORE_SOURCE_FILES
                 ./src/CEGuiOpenGL3BaseApplication.cpp

@@ -59,9 +59,6 @@
 #   include "CEGuiOgreBaseApplication.h"
 #endif
 #ifdef CEGUI_SAMPLES_RENDERER_OPENGL_ACTIVE
-#   ifdef CEGUI_BUILD_RENDERER_OPENGL
-#      include "CEGuiOpenGLBaseApplication.h"
-#   endif
 #   ifdef CEGUI_BUILD_RENDERER_OPENGL3
 #      include "CEGuiOpenGL3BaseApplication.h"
 #   endif
@@ -207,9 +204,6 @@ bool SamplesFrameworkBase::initialise
     d_rendererSelector->setRendererAvailability(OgreGuiRendererType);
 #endif
 #ifdef CEGUI_SAMPLES_RENDERER_OPENGL_ACTIVE
-    #ifdef CEGUI_BUILD_RENDERER_OPENGL
-        d_rendererSelector->setRendererAvailability(OpenGLGuiRendererType);
-    #endif
     #ifdef CEGUI_BUILD_RENDERER_OPENGL3
         d_rendererSelector->setRendererAvailability(OpenGL3GuiRendererType);
     #endif
@@ -259,11 +253,6 @@ bool SamplesFrameworkBase::initialise
 #   endif // DX11
 #endif // Win32
 #ifdef CEGUI_SAMPLES_RENDERER_OPENGL_ACTIVE
-#   ifdef CEGUI_BUILD_RENDERER_OPENGL
-                case OpenGLGuiRendererType:
-                    d_baseApp = new CEGuiOpenGLBaseApplication();
-                    break;
-#   endif
 #   ifdef CEGUI_BUILD_RENDERER_OPENGL3
                 case OpenGL3GuiRendererType:
                     d_baseApp = new CEGuiOpenGL3BaseApplication();
